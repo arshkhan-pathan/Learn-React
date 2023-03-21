@@ -1,29 +1,3 @@
-# Academind's Tutorial
-
-- [The Complete Tutorial][tutorial]
-
-[tutorial]: https://youtu.be/BwuLxPH8IDs
-
-## Overview
-
-- Static error checking is always better than runtime crazy ones.
-
-## Course Outline
-
-1. Getting Started
-1. TypeScript Basics
-1. Compiler & Configuration Deep Dive
-1. Working with Next-Gen JS Code
-1. Classes & Interfaces
-1. Advanced Types & TypeScript Features
-1. Generics
-1. Decorators
-1. Time to Practice &mdash; Full Project
-1. Working with Namespaces & Modules
-1. Webpack & TypeScript
-1. Third-Party Libraries & TypeScript
-1. React + TS & NodeJS + TS
-
 ## 1. Setting it up
 
 1. Use `npm init` to set up the `package.json` file.

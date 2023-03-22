@@ -11,98 +11,140 @@
 ## Course Outline
 
 1. Getting Started
+
 1. TypeScript Basics
+
 1. Compiler & Configuration Deep Dive
+
 1. Working with Next-Gen JS Code
+
 1. Classes & Interfaces
+
 1. Advanced Types & TypeScript Features
+
 1. Generics
+
 1. Decorators
+
 1. Time to Practice &mdash; Full Project
+
 1. Working with Namespaces & Modules
+
 1. Webpack & TypeScript
+
 1. Third-Party Libraries & TypeScript
+
 1. React + TS & NodeJS + TS
 
 ## 1. Setting it up
 
 1. Use `npm init` to set up the `package.json` file.
+
 1. Use `npm install --saveDev lite-server` to install a dependency which will only affect the development environment.
+
 1. Add `"start": "lite-server"` to the `"scripts"` key.
-   - And also add this key:
-     ```json
-     "devDependencies": {
-         "lite-server": "^2.5.4"
-     }
-     ```
+
+- And also add this key:
+
+```json
+
+"devDependencies": {
+
+"lite-server": "^2.5.4"
+
+}
+
+```
+
 1. Use `npm start` to start serving your website.
-   - Now the app will be automatically reloaded.
+
+- Now the app will be automatically reloaded.
 
 > Having both the `.js` and the `.ts` files open at the same time might generate errors due to conflicts in the IDE.
 
 ## 2. Core Types
 
 - `number`
+
 - `string`
+
 - `boolean`
-  - Truthy and falsy values still exist...
+
+- Truthy and falsy values still exist...
+
 - `object`
 
-  - Object types are inferred if you're creating one directly.
+- Object types are inferred if you're creating one directly.
 
-    ```ts
-    const person1 = {
-      name: "Max", // inferred as `string`
-      age: 30, // inferred as `number`
-    };
+```ts
+const person1 = {
+  name: "Max", // inferred as `string`
 
-    const person2: {
-      name: string;
-      age: number;
-    } = {
-      name: "Max",
-      age: 30,
-    };
-    ```
+  age: 30, // inferred as `number`
+};
+
+const person2: {
+  name: string;
+
+  age: number;
+} = {
+  name: "Max",
+
+  age: 30,
+};
+```
 
 - `Array`
 
-  ```ts
-  let favoritActivities: string[];
-  favoritActivities = ["Sports"];
+```ts
+let favoritActivities: string[];
 
-  for (const hobby of favoriteActivities) {
-    console.log(hobby.toUpperCase());
-  }
-  ```
+favoritActivities = ["Sports"];
+
+for (const hobby of favoriteActivities) {
+  console.log(hobby.toUpperCase());
+}
+```
 
 - `Tuple`: fixed-length and fixed-type array.
-  - Be careful with implicit tuples, they can be inferred as *union*s (`|`).
-  ```ts
-  const role: [number, string] = [2, "author"];
-  ```
-  - The `push()` method is an exception for types.
+
+- Be careful with implicit tuples, they can be inferred as *union*s (`|`).
+
+```ts
+const role: [number, string] = [2, "author"];
+```
+
+- The `push()` method is an exception for types.
+
 - `Enum`
-  - Considered to be a custom type.
-  ```ts
-  enum Role {
-    new = 5,
-    old,
-  }
-  ```
+
+- Considered to be a custom type.
+
+```ts
+enum Role {
+  new = 5,
+
+  old,
+}
+```
+
 - `Any`
-  - Takes away the benefits of TS, it's basically JS now.
+
+- Takes away the benefits of TS, it's basically JS now.
 
 Use `typeof` to check types:
 
 ```ts
-if (typeof n1 === 'number') { ... }
+
+if (typeof  n1 === 'number') { ... }
+
 ```
 
 ### Literal Types
 
 ```ts
 const eitherXOrY: "x" | "y" = "x";
+
 const eitherXOrY: "x" | "y" = "z"; // error
 ```
 
@@ -127,6 +169,7 @@ function printResult(num: number): void {
 
 function printResult(num: number): undefined {
   console.log(num);
+
   return; // `undefined` return type
 }
 ```
@@ -137,6 +180,7 @@ One `=` + one `!` includes both `null` and `undefined` => `!=`.
 
 ```ts
 let combinedValues: Function; // won't have parameters and return values typed
+
 let combinedValues: (a: number, b: number) => number;
 
 combinedValues = add;
@@ -150,13 +194,16 @@ The better choice over `any`.
 
 ```ts
 let userInput: unknown;
+
 let userName: string;
 
 userInput = 5;
+
 userInput = "Max";
 
 if (typeof userInput === "string") {
   // `unknown` needs a check
+
   userName = userInput;
 }
 ```
@@ -168,6 +215,7 @@ This function returns a `never`:
 ```ts
 function generateError(message: string, code: number): never {
   throw { message: message, errorCode: code };
+
   // while (true) {}
 }
 ```
@@ -177,15 +225,21 @@ function generateError(message: string, code: number): never {
 ### Watch Mode
 
 ```cmd
+
 tsc file.ts --watch
+
 ```
 
 What if you have more than 1 file? Use this to initiate a configuration for the project:
 
 ```cmd
+
 tsc --init
 
+
+
 tsc -w
+
 ```
 
 ### Including and Excluding Files
@@ -193,83 +247,129 @@ tsc -w
 Add this to the end of `tsconfig.json`:
 
 ```json
+
 "exclude": [
-    "analytics.ts",
-    "*.dev.ts",
-    "node_modules"
+
+"analytics.ts",
+
+"*.dev.ts",
+
+"node_modules"
+
 ],
+
 "include": [ // If in the config, you have to specify everything.
-    "app.ts",
+
+"app.ts",
+
 ],
+
 "files": [ // Can't specify folders here.
-    "app.ts"
+
+"app.ts"
+
 ]
+
 ```
 
 `"node_modules"` is automatically excluded actually.
 
 ### Setting a Compilation Target
 
-1. `target`: `es5` is the default &mdash; it doesn't have `let` and `const`.
-1. `lib`: The default contains the `dom` library for browsers for example.
-   ```json
-   "lib": [
-       "dom",
-       "es6",
-       "dom.iterable",
-       "scripthost"
-   ],
-   ```
-1. `sourceMap`s: if `true`, will enable `.ts` files in the browser for debugging.
-1. `rootDir`: Typically, the `dist` folder will have the output and the `src` folder will have the TS files.
-   ```json
-   "outDir": "./dist/",
-   "rootDir": "./src/",
-   ```
-1. `removeComments` is a good option for memory optimization.
-1. `noEmit` won't compile to JS, so the workflow will be simpler.
-1. `downlevelIteration` will limit the iteration loops, which will output more robust code.
-1. `noEmitOnError` (default is `false`). Setting it to `true` will be safer and won't generate broken code.
-1. `strict` is the same as setting up all of the options below it (inside the strict block).
+1.  `target`: `es5` is the default &mdash; it doesn't have `let` and `const`.
 
-   1. `noImplicitAny`
-      - Sometimes it isn't possible for TypeScript to infer types...
-   1. `strictNullChecks`
-      - `document.querySelector('button')!` might be `null` at some point. And that's why we add the `!`.
-   1. `strictFunctionTypes`
-   1. `strictBindCallApply`: this is related to binding the `this` keyword.
+1.  `lib`: The default contains the `dom` library for browsers for example.
 
-      ```ts
-      function clickHandler(message: string) {
-        console.log("Clicked! " + message);
-      }
+```json
 
-      if (button) {
-        button.addEventListener(
-          "click",
-          clickHandler.bind(null, "Youre welcome")
-        );
-      }
-      ```
+"lib": [
 
-1. `Additional Checks` increase code quality.
+"dom",
+
+"es6",
+
+"dom.iterable",
+
+"scripthost"
+
+],
+
+```
+
+1.  `sourceMap`s: if `true`, will enable `.ts` files in the browser for debugging.
+
+1.  `rootDir`: Typically, the `dist` folder will have the output and the `src` folder will have the TS files.
+
+```json
+
+"outDir": "./dist/",
+
+"rootDir": "./src/",
+
+```
+
+1.  `removeComments` is a good option for memory optimization.
+
+1.  `noEmit` won't compile to JS, so the workflow will be simpler.
+
+1.  `downlevelIteration` will limit the iteration loops, which will output more robust code.
+
+1.  `noEmitOnError` (default is `false`). Setting it to `true` will be safer and won't generate broken code.
+
+1.  `strict` is the same as setting up all of the options below it (inside the strict block).
+
+1.  `noImplicitAny`
+
+- Sometimes it isn't possible for TypeScript to infer types...
+
+1.  `strictNullChecks`
+
+- `document.querySelector('button')!` might be `null` at some point. And that's why we add the `!`.
+
+1.  `strictFunctionTypes`
+
+1.  `strictBindCallApply`: this is related to binding the `this` keyword.
+
+```ts
+function clickHandler(message: string) {
+  console.log("Clicked! " + message);
+}
+
+if (button) {
+  button.addEventListener(
+    "click",
+
+    clickHandler.bind(null, "Youre welcome")
+  );
+}
+```
+
+1.  `Additional Checks` increase code quality.
 
 ## 4. Debugging with VS Code
 
 Extensions:
 
 1. ESLint
+
 1. npm
+
 1. Prettier
+
 1. Debugger for Chrome
-   - Enable the `sourceMap` option inside `tsconfig.json`.
-   - Press <kbd>F5</kbd> and choose Chrome to start an anonymous debugging session.
-   - You can even place breakpoints.
+
+- Enable the `sourceMap` option inside `tsconfig.json`.
+
+- Press <kbd>F5</kbd> and choose Chrome to start an anonymous debugging session.
+
+- You can even place breakpoints.
 
 ### Other Resources
 
 - [`tsconfig.json` Docs][tsconfig_docs]
+
 - [TS Compileer Docs][tscompiler_docs]
+
 - [VS Code TS Debugging Docs][vscode_ts_debugging]
 
 [tscompiler_docs]: https://www.typescriptlang.org/docs/handbook/compiler-options.html
@@ -289,16 +389,21 @@ Extensions:
 The difference is the scope.
 
 - `var` has global and function scope.
-  - Declaring a `var` inside an `if` block, for example, also creates a `var` globally in JS.
-    - TS would complain anyway...
+
+- Declaring a `var` inside an `if` block, for example, also creates a `var` globally in JS.
+
+- TS would complain anyway...
+
 - `let` only has block scope.
-  - It's only available in the block you wrote or in lower level ones.
+
+- It's only available in the block you wrote or in lower level ones.
 
 ### Copying Objects with the Spread Operator
 
 ```ts
 const person = {
   name: "Max",
+
   age: 30,
 };
 
@@ -350,6 +455,7 @@ The rule of thumb is that `describe` below will call on the immediate object and
 ```ts
 class Department {
   private name: string;
+
   private employees: string[] = [];
 
   constructor(n: string) {
@@ -366,6 +472,7 @@ class Department {
 
   printEmployeeInformation() {
     console.log(this.employees.length);
+
     console.log(this.employees);
   }
 }
@@ -377,6 +484,7 @@ const accoutingCopy = { describe: accounting.describe };
 accountingCopy.describe(); // will cause an error, has to add a `name` property to `accountingCopy` and a `this` parameter to `describe`
 
 accounting.addEmployee("Max");
+
 accounting.addEmployee("Manu");
 
 accounting.printEmployeeInformation();
@@ -385,7 +493,9 @@ accounting.printEmployeeInformation();
 ### Shorthand Initialization
 
 ```ts
-constructor(private id: string, public name: string) {...}
+
+constructor(private  id: string, public  name: string) {...}
+
 ```
 
 Now you don't even need to mention the property outside the constructor, it will be automatically done for you.
@@ -395,7 +505,9 @@ Now you don't even need to mention the property outside the constructor, it will
 The `readonly` modifier means that it won't change later.
 
 ```ts
-constructor (private readonly id: string, ...) {...}
+
+constructor (private  readonly  id: string, ...) {...}
+
 ```
 
 ### Inheritance
@@ -406,6 +518,7 @@ The class receives the superclass' constructor by default, unless you add one.
 class ITDepartment extends Department {
   constructor(id: string, public admins: string[]) {
     super(id, "IT");
+
     this.admins = admins;
   }
 }
@@ -418,13 +531,21 @@ The property won't be accessible from outside, but it will be accessible from ot
 ### Getters and Setters
 
 ```ts
-get mostRecentReport() {
-    return this.lastReport;
+
+get  mostRecentReport() {
+
+return  this.lastReport;
+
 }
 
-set mostRecentReport(value: string) {
-  this.addReport(value);
+
+
+set  mostRecentReport(value: string) {
+
+this.addReport(value);
+
 }
+
 ```
 
 ### Static Methods
@@ -432,7 +553,9 @@ set mostRecentReport(value: string) {
 Just place the `static` keyword in front of the method:
 
 ```ts
-static createEmployee() {}
+
+static  createEmployee() {}
+
 ```
 
 ### Abstract Classes
@@ -440,7 +563,9 @@ static createEmployee() {}
 Simply add the `abstract` keyword:
 
 ```ts
-abstract describe(): void {}
+
+abstract  describe(): void {}
+
 ```
 
 You can also have `abstract` classes and properties. You cannot have a `private abstract` method.
@@ -460,6 +585,7 @@ class AccountingDepartment extends Department {
       return this;
     } else {
       this.instance = AccountingDepartment("d2", []);
+
       return this.instance;
     }
   }
@@ -473,6 +599,7 @@ You don't need to implement a class for the `interface`. An object literal also 
 ```ts
 interface Person {
   name: string;
+
   age: number;
 
   greet(phrase: string): void;
@@ -482,7 +609,9 @@ let user1: Person;
 
 user1 = {
   name: "Max",
+
   age: 30,
+
   greet(phrase: string) {
     console.log(phrase + " " + this.name);
   },
@@ -496,9 +625,13 @@ We could use the `type` keyword above, but then we wouldn't be able to implement
 You can inherit from only 1 class, but you can implement multiple interfaces.
 
 ```ts
-class Person implements Greetable {
-    ...
+
+class  Person  implements  Greetable {
+
+...
+
 }
+
 ```
 
 #### Readonly with Interfaces
@@ -536,16 +669,27 @@ interface AddFn {
 #### Optional Properties and Methods with Interfaces
 
 ```ts
-interface Named {
-    readonly name: string;
-    outputName?: string;
+
+interface  Named {
+
+readonly  name: string;
+
+outputName?: string;
+
 }
 
-class Person implements Greetable {
-    name?: string;
 
-    ...
+
+class  Person  implements  Greetable {
+
+name?: string;
+
+
+
+...
+
 }
+
 ```
 
 This also works for parameters.
@@ -561,11 +705,13 @@ They are _not_ translated to JS. There is no translation.
 ```ts
 type Admin = {
   name: string;
+
   privileges: string[];
 };
 
 type Employee = {
   name: string;
+
   startDate: Date;
 };
 
@@ -573,7 +719,9 @@ type ElevatedEmployee = Admin & Employee;
 
 const e1: ElevatedEmployee = {
   name: "Max",
+
   privileges: ["create-server"],
+
   startDate: new Date(),
 };
 ```
@@ -585,44 +733,50 @@ You could also use interfaces with `extends` to achieve the same effect. Interse
 Two Options:
 
 - `in`
+
 - `instanceof`
 
 ```ts
 function add(a: Combinable, b: Combinable) {
-    if (typeof a === 'string' || typeof ===) {
-        return a.toString() + b.toString();
-    }
-    return a + b;
+  // this type checking functions are called typeGuards
+  if (typeof a === "string" || typeof b === "string") {
+    return a.toString() + b.toString();
+  }
+
+  return a + b;
 }
 
 type UnknownEmployee = Employee | Admin;
 
 function printEmployeeInfo(emp: UnknownEmployee) {
-    console.log('Name: ' + emp) // `typeof emp.privileges` won't work
-    if ('privileges' in emp) { // JS feature
-        console.log('Privileges: ' + emp.privileges);
-    }
+  console.log("Name: " + emp); // `typeof emp.privileges` won't work
+
+  if ("privileges" in emp) {
+    // JS feature
+
+    console.log("Privileges: " + emp.privileges);
+  }
 }
 
 class Car {
-    drive() {}
+  drive() {}
 }
 
 class Truck {
-    drive(){}
+  drive() {}
 
-    loadCargo(){}
+  loadCargo() {}
 }
 
 type Vehicle = Car | Type;
 
 const v1 = new Car();
+
 const v2 = new Truck();
 
 function useVehicle(vehicle: Vehicle) {
-    if (vehicle instanceof Truck) {
-
-    }
+  if (vehicle instanceof Truck) {
+  }
 }
 ```
 
@@ -631,11 +785,13 @@ function useVehicle(vehicle: Vehicle) {
 ```ts
 interface Bird {
   type: "bird"; // literal type
+
   flyingSpeed: number;
 }
 
 interface Horse {
   type: "horse";
+
   runningSpeed: number;
 }
 
@@ -643,15 +799,21 @@ type Animal = Bird | Horse;
 
 function moveAnimal(animal: Animal) {
   let speed;
+
   // typeof won't work because interfaces are not compiled
+
   switch (animal.type) {
     case "bird":
       speed = animal.flyingSpeed;
+
       break;
+
     case "horse":
       speed = animal.runningSpeed;
+
       break;
   }
+
   console.log("Moving with speed: " + speed);
 }
 ```
@@ -662,7 +824,9 @@ function moveAnimal(animal: Animal) {
 const userInputElement = <HTMLInputElement>(
   document.getElementById("user-input")!
 );
+
 // or
+
 const userInputElement = document.getElementById(
   "user-input"
 )! as HTMLInputElement;
@@ -681,6 +845,7 @@ interface ErrorContainer {
 
 const errorBag: ErrorContainer = {
   email: "Not a valid email",
+
   username: "Must start with a captial character",
 };
 ```
@@ -689,18 +854,25 @@ const errorBag: ErrorContainer = {
 
 ```ts
 // Overloading return and parameter types
+
 function add(a: string): string;
+
 function add(a: string, b: string): string;
+
 function add(a: number, b: number): number;
+
 function add(a: Combinable, b: Combinable) {
   if (typeof a === "string" || typeof b === "string") {
     return a.toString() + b.toString();
   }
+
   return a + b;
 }
 
 // Can't call string methods on `Combinable` because TS isn't sure it's a string.
+
 const result = add("Max", "Schwarz");
+
 // const result = add('Max', 'Schwarz') as string; // one solution
 ```
 
@@ -711,14 +883,18 @@ Same as null-aware chaining in Dart.
 ```ts
 const fetchedUserData = {
   id: "u1",
+
   name: "Max",
+
   job: {
     title: "CEO",
+
     description: "My own company",
   },
 };
 
 console.log(fetchedUserData.job && fetchedUserData.job.title); // The JS way
+
 console.log(fetchedUserData?.job?.title);
 ```
 
@@ -730,6 +906,7 @@ Null-aware asignment in Dart.
 const userInput = null;
 
 // const storedData = userInput || 'DEFAULT'; // will work weirdly if userInput is falsy but non-null (`''`)
+
 const storedData = userInput ?? "DEFAULT";
 ```
 
@@ -755,6 +932,7 @@ function merge<T, U>(objA: T, objB: U): T & U {
 }
 
 const mergeObj = merge({ name: "Max" }, { age: 30 }); // without generics storing it in a variable will not have `name` or `age` available
+
 console.log(mergeObj.age);
 ```
 
@@ -768,6 +946,7 @@ function merge<T extends object, U extends object>(objA: T, objB: U): T & U {
 }
 
 // With constraints to the generic types, you can't pass 30 anymore
+
 const mergeObj = merge({ name: "Max" }, 30); // How would you access the 30 then?
 ```
 
@@ -776,6 +955,7 @@ const mergeObj = merge({ name: "Max" }, 30); // How would you access the 30 then
 ```ts
 function extractAndConvert<T extends object, U extends keyof T>(
   obj: T,
+
   key: U
 ) {
   return obj[key];
@@ -807,33 +987,47 @@ class Storage<T> {
 ```ts
 interface CourseGoal {
   title: string;
+
   description: string;
+
   completeUntil: Date;
 }
 
 function createCourseGoal(
   title: string,
+
   description: string,
+
   date: Date
 ): CourseGoal {
   let courseGoal: Partial<CourseGoal> = {}; // properties are going to be completed
+
   courseGoal.title = title;
+
   courseGoal.description = description;
+
   courseGoal.completeUntil = date;
+
   return courseGoal as CourseGoal;
+
   // return {title: title, description: description, date: date}
 }
 
 const names: Readonly<string> = ["Max", "Anna"];
+
 name.push("Manu"); // error, not allowed
 ```
 
 ### Generic vs Union Types
 
 ```ts
+
 (string | number | boolean)[] // array with strings, numbers and booleans
+
 // !=
+
 string[] | number[] | boolean[] // array of only string, only numbers or only booleans
+
 ```
 
 Generics are more flexible with the types, while unions are more flexible.
@@ -851,6 +1045,7 @@ The decorator runs when TS finds the constructor definition, not necessarily whe
 ```ts
 function Logger(constructor: Function) {
   console.log("Logging...");
+
   console.log(constructor);
 }
 
@@ -874,6 +1069,7 @@ console.log(person);
 function Logger(logString: string) {
   return function (constructor: Function) {
     console.log(logString);
+
     console.log(constructor);
   };
 }
@@ -894,9 +1090,12 @@ Using decorators for HTML templates:
 function WithTemplate(template: string, hookId: string) {
   return function (constructor: Function) {
     const hookEl = document.getElementById(hookId);
+
     const p = new constructor(); // Now we can access the object itself.
+
     if (hookEl) {
       hookEl.innerHTML = template;
+
       hookEl.querySelector("h1")!.textContent = p.name;
     }
   };
@@ -923,8 +1122,11 @@ This is basically how Angular uses decorators.
 Other places where you can add decorators:
 
 - Properties
+
 - Accessors (`set`)
+
 - Methods
+
 - Parameters
 
 Examine the documentation to check which parameters they should have.
@@ -945,10 +1147,14 @@ function WithTemplate(template: string, hookId: string) {
     return class extends constructor {
       constructor(..._: any[]) {
         super();
+
         const hookEl = document.getElementById(hookId);
+
         const p = new constructor(); // Now we can access the object itself.
+
         if (hookEl) {
           hookEl.innerHTML = template;
+
           hookEl.querySelector("h1")!.textContent = this.name;
         }
       }
@@ -968,14 +1174,19 @@ A method is just a function with a property as a value.
 ```ts
 function Autobind(_: any, __: string, descriptor: PropertyDescriptor) {
   const originalMethod = descriptor.value;
+
   const adjDescriptor: PropertyDescriptor = {
     configurable: true,
+
     enumerable: false,
+
     get() {
       const boundFn = originalMethod.bind(this);
+
       return boundFn;
     },
   };
+
   return adjDescriptor;
 }
 
@@ -989,12 +1200,15 @@ class Printer {
 }
 
 const p = new Printer();
+
 p.showMessage();
 
 const button = document.querySelector("button");
 
 // The `this` keyword with event listeners... you have to bind stuff without an autobind decorator.
+
 // button.addEventListener('click', p.showMessage.bind(p));
+
 button.addEventListener("click", p.showMessage);
 ```
 
@@ -1012,6 +1226,7 @@ const registeredValidators: ValidatorConfig = {};
 function Required(target: any, propName: string) {
   registeredValidators[target.constructor.name] = {
     ...registeredValidators[target.constructor.name],
+
     [propName]: ["required"],
   };
 }
@@ -1019,54 +1234,69 @@ function Required(target: any, propName: string) {
 function PositiveNumber() {
   registeredValidators[target.constructor.name] = {
     ...registeredValidators[target.constructor.name],
+
     [propName]: ["positive"],
   };
 }
 
 function validate(obj: any) {
   const objValidatorConfig = registeredValidators[obj.constructor.name];
+
   if (!objValidatorConfig) {
     return true;
   }
+
   let isValied = true;
+
   for (const prop in objValidatorConfig) {
     for (const validator of objValidatorConfig[prop]) {
       switch (validator) {
         case "required":
           isValid = isValid && !!obj[prop];
+
           break;
+
         case "positive":
           isValid = isValid && obj[prop] > 0;
+
           break;
       }
     }
   }
+
   return isValid;
 }
 
 class Course {
   @Required title: string;
+
   @PositiveNumber price: number;
 
   constructor(t: string, p: number) {
     this.title = t;
+
     this.price = p;
   }
 }
 
 const courseForm = document.querySelector("form")!;
+
 courseForm.addEventListener("submit", (event) => {
   event.preventDefault(); // preventing "No HTTP requests"
+
   const title = document.getElementById("title") as HTMLInputElement;
+
   const priceEl = document.getElementById("price") as HTMLInputElement;
 
   const title = titleEl.value;
+
   const price = +priceEl.value;
 
   const createdCourse = new Course(title, price);
 
   if (!validate(createdCourse)) {
     alert("Invalid input, please try again!");
+
     return;
   }
 });
@@ -1075,7 +1305,9 @@ courseForm.addEventListener("submit", (event) => {
 ```html
 <form>
   <input type="text" placeholder="Course title" id="title" />
+
   <input type="text" placeholder="Course price" id="price" />
+
   <button type="submit">Save</button>
 </form>
 ```
@@ -1083,8 +1315,11 @@ courseForm.addEventListener("submit", (event) => {
 ### Decorator Libraries
 
 - [typestack's `class-validator`][typestack_class_validator]
-  - Very nice to take a look at professional decorators.
+
+- Very nice to take a look at professional decorators.
+
 - Angular has a lot of decorators we can import individually.
+
 - NestJS uses decorators for the server side.
 
 [typestack_class_validator]: https://github.com/typestack/class-validator
@@ -1098,31 +1333,57 @@ Just create a class with a `private constructor`.
 Use the `dragStart` event from the browser to deal with drag & drop. You also need to add the `draggable="true"` to the HTML element in order for the browser to prepare itself.
 
 ```ts
-interface Draggable {
-    dragStartHandler(event: DragEvent): void;
-    dragEndHandler(event: DragEvent): void;
+
+interface  Draggable {
+
+dragStartHandler(event: DragEvent): void;
+
+dragEndHandler(event: DragEvent): void;
+
 }
 
-interface DragTarget {
-    dragOverHandler(event: DragEvent): void; // otherwise dropping won't be possible
-    dropHandler(event: DragEvent): void;
-    dragLeaveHandler(event: DragEvent): void;
+
+
+interface  DragTarget {
+
+dragOverHandler(event: DragEvent): void; // otherwise dropping won't be possible
+
+dropHandler(event: DragEvent): void;
+
+dragLeaveHandler(event: DragEvent): void;
+
 }
+
+
 
 ...
+
+
 
 @autobind
+
 dragOverHandler(_: DragEvent) {
-    const listEl = this.element.querySelector('ul')!;
-    event.preventDefault(); // otherwise dropping is not allowed
-    listEl.classList.add('droppable'); // this class changes the color of the background in the CSS
+
+const  listEl = this.element.querySelector('ul')!;
+
+event.preventDefault(); // otherwise dropping is not allowed
+
+listEl.classList.add('droppable'); // this class changes the color of the background in the CSS
+
 }
+
+
 
 ...
 
+
+
 configure() {
-    this.element.addEventListener('dragover', this.dragOverHandler);
+
+this.element.addEventListener('dragover', this.dragOverHandler);
+
 }
+
 ```
 
 ## Modules and Namespaces
@@ -1130,26 +1391,37 @@ configure() {
 3 options:
 
 - Write different files and have TS compile them all to JS.
-  - Manual imports.
+
+- Manual imports.
+
 - Namespaces & File Bundling.
-  - Bundles multiple TS files into 1 JS files.
-  - Per-file or bundled compilation is possible (less imports to manage).
+
+- Bundles multiple TS files into 1 JS files.
+
+- Per-file or bundled compilation is possible (less imports to manage).
+
 - ES6/Exports Modules
-  - JS already supports imports/exports.
-  - Per-file compilation but single `<script>` import.
-  - Bundling via third-party tools (e.g. Webpack) is possible.
+
+- JS already supports imports/exports.
+
+- Per-file compilation but single `<script>` import.
+
+- Bundling via third-party tools (e.g. Webpack) is possible.
 
 ### Working with Namespaces
 
 ```ts
-namespace App {
-    export interface X {...} // without `export` they wouldn't be available outside the file
+
+namespace  App {
+
+export  interface  X {...} // without `export` they wouldn't be available outside the file
+
 ```
 
 Importing the `namespace` &mdash; the `///` are mandatory &mdash;:
 
 ```ts
-/// <reference path="drag-drop-interfaces.ts" />
+/// <reference  path="drag-drop-interfaces.ts"  />
 
 namespace App {
   // put your file code in the same namespace but now in this file
@@ -1183,26 +1455,38 @@ And you will need to take `defer` out and insert `module` into the `script` elem
 #### Other Import Syntaxes
 
 1. Importing a lot of stuff
-   ```ts
-   import * as Validation from "../path";
-   ```
+
+```ts
+import * as Validation from "../path";
+```
+
 1. Aliasing other files' names:
-   ```ts
-   import { autobind as Autobind } from "../path";
-   ```
+
+```ts
+import { autobind as Autobind } from "../path";
+```
+
 1. If you have a file that only exports one thing:
 
-   ```ts
-   export default class A {
-       ...
-   }
+```ts
 
-   ...
+export  default  class  A {
 
-   import Cmp from '../path'; // Choose your own name
-   ```
+...
 
-   - This is bad for name conventions though...
+}
+
+
+
+...
+
+
+
+import  Cmp  from  '../path'; // Choose your own name
+
+```
+
+- This is bad for name conventions though...
 
 #### How does code in modules execute?
 
@@ -1211,6 +1495,7 @@ If you have a `const` in one file being imported by multiple files, how often do
 #### More Resources on JS Modules
 
 - [CommonJS vs AMD vs Require JS vs ES6 Modules][js_modules_overview]
+
 - [MDN Docs on JS Modules][mdn_docs_js_modules]
 
 [js_modules_overview]: https://medium.com/computed-comparisons/commonjs-vs-amd-vs-requirejs-vs-es6-modules-2e814b114a0b
@@ -1229,115 +1514,172 @@ If you use JS Modules, your code will still appear in different files, so the br
 Webpack is a bundling & build orchestration tool.
 
 - Normal setup
-  - Multiple .ts files & imports (HTTP requests)
-  - Unoptimized code (not as small as possible)
-  - External development server needed.
+
+- Multiple .ts files & imports (HTTP requests)
+
+- Unoptimized code (not as small as possible)
+
+- External development server needed.
+
 - With Webpack
-  - Code bundles, less imports required
-  - Optimized (minified) code, less code to download
-  - More build steps can be added easily
+
+- Code bundles, less imports required
+
+- Optimized (minified) code, less code to download
+
+- More build steps can be added easily
 
 #### Installing Webpack & Other Important Dependencies
 
 ```sh
-npm install --save-dev webpack webpack-cli webpack-dev-server typescript ts-loader
+
+npm install  --save-dev  webpack  webpack-cli  webpack-dev-server  typescript  ts-loader
+
 ```
 
-| Package              | Purpose                                                   |
+| Package | Purpose |
+
 | -------------------- | --------------------------------------------------------- | ------------- |
-| `webpack`            | The heart of bundling                                     |
-| `webpack-cli`        | Running CLI commands with Webpack                         |
-| `webpack-dev-server` | For refreshing the server with the custom                 | Webpack code. |
-| `ts-loader`          | How to convert TS code to JS with Webpack.                |
-| `typescript`         | It's a good practice to install a copy of TS per project. |
+
+| `webpack` | The heart of bundling |
+
+| `webpack-cli` | Running CLI commands with Webpack |
+
+| `webpack-dev-server` | For refreshing the server with the custom | Webpack code. |
+
+| `ts-loader` | How to convert TS code to JS with Webpack. |
+
+| `typescript` | It's a good practice to install a copy of TS per project. |
 
 #### Adding Entry and Output Configurations
 
 1. Make sure `target` is at `es5` or `es6`.
+
 1. `module` should be set to `es6`+.
+
 1. Check your `outDir`.
+
 1. Comment the `rootDir`.
+
 1. Create a `webpack.config.js` file at the root of the project:
 
-   ```js
-   const path = require("path");
+```js
+const path = require("path");
 
-   module.exports = {
-     entry: "./src/app.ts",
-     output: {
-       filename: "bundle.[contenthash].js",
-       path: path.resolve(__dirname, "dist"),
-     },
-     devtool: "inline-source-map",
-     module: {
-       rules: [
-         {
-           test: /\.ts$/,
-           use: "ts-loader",
-           exclude: /node-modules/,
-         },
-       ],
-     },
-     resolve: {
-       extensions: [".ts", ".js"],
-     },
-   };
-   ```
+module.exports = {
+  entry: "./src/app.ts",
 
-   - `module.exports` is how you export in NodeJS.
+  output: {
+    filename: "bundle.[contenthash].js",
+
+    path: path.resolve(__dirname, "dist"),
+  },
+
+  devtool: "inline-source-map",
+
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+
+        use: "ts-loader",
+
+        exclude: /node-modules/,
+      },
+    ],
+  },
+
+  resolve: {
+    extensions: [".ts", ".js"],
+  },
+};
+```
+
+- `module.exports` is how you export in NodeJS.
 
 1. Add to the `scripts`:
-   ```json
-   "build": "webpack"
-   ```
+
+```json
+
+"build": "webpack"
+
+```
+
 1. Run `npm run build`
 
 #### Adding the `webpack-dev-server`
 
 1. Simply replace the `start` key with `"webpack-dev-server"`.
+
 1. Add to `module.exports -> output` `publicPath: 'dist'`.
+
 1. Add to `module.exports` `mode: 'development'`.
 
 #### Adding the Production Workflow
 
 1. Create a `webpack.config.prod.js`
-   - Webpack doesn't care about this file, name it however you want.
+
+- Webpack doesn't care about this file, name it however you want.
+
 1. Copy the dev configurations.
+
 1. Alter `mode` to `'production'`.
+
 1. Set `devtool` to `'none'`.
+
 1. Run `npm install --save-dev clean-webpack-plugin`
+
 1. Add at the bottom:
 
-   ```ts
-   const CleanPlugin = require('clean-webpack-plugin');
+```ts
 
-   ...
+const  CleanPlugin = require('clean-webpack-plugin');
 
-   plugins: [
-       new CleanPlugin.CleanWebpackPlugin()
-   ]
-   ```
+
+
+...
+
+
+
+plugins: [
+
+new  CleanPlugin.CleanWebpackPlugin()
+
+]
+
+```
 
 1. Use on the `build` key: `"webpack --config webpack.config.prod.js"`
+
 1. `npm run build`.
 
 ## 3rd Party Libraries
 
 1. Normal libraries (JS) and using them with TS.
+
 1. TS-specific libraries
 
 ### Normal Libraries
 
 1. Lodash
-   ```sh
-   npm -i --save-dev lodash
-   ```
-   - TS won't understand it because `lodash` was only written for TS.
-   - Go to the [DefinitelyTyped][def_typed] repo for the declaration types of the modules (`.d.ts`). The TS docs teach you how to do that.
-   - You will need to install types for it:
-     ```sh
-     npm install --save-dev @types/lodash
-     ```
+
+```sh
+
+npm -i --save-dev lodash
+
+```
+
+- TS won't understand it because `lodash` was only written for TS.
+
+- Go to the [DefinitelyTyped][def_typed] repo for the declaration types of the modules (`.d.ts`). The TS docs teach you how to do that.
+
+- You will need to install types for it:
+
+```sh
+
+npm install --save-dev @types/lodash
+
+```
 
 [def_typed]: https://github.com/DefinitelyTyped/DefinitelyTyped
 
@@ -1370,17 +1712,23 @@ The response from the Google Maps API will be a nested JSON object.
 You can also specify the type of the `get` response:
 
 ```ts
+
 axios.get<{results: {geometry: {location: {lat: number, lng: number}}}[]}>(...);
+
 ```
 
 Then:
 
 1. Install Google Maps' SDK `<script>`
+
 1. Use the global variable declaration to make TS aware of it:
-   ```ts
-   declare var google: any;
-   ```
+
+```ts
+declare var google: any;
+```
+
 1. Then use `const map = ...` with the coordinates above to place your item on the interactive Google Maps on your website.
+
 1. Use `@types/googlemaps` to get typing support.
 
 ## Node.js + Express & TS
@@ -1390,8 +1738,11 @@ Node.js is not able to execute TS code on its own. Compiling the TS code to js a
 Install both types:
 
 ```sh
-npm install --save-dev @types/node
-npm install --save-dev @types/express
+
+npm install  --save-dev  @types/node
+
+npm install  --save-dev  @types/express
+
 ```
 
 ```ts

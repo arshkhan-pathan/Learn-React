@@ -14,10 +14,10 @@ function Formc({ addHandler }) {
   return (
     <Form onSubmit={submitHandler}>
       <Form.Group className="mb-3" controlId="formBasicEmail">
-        <Form.Label>Enter Details</Form.Label>
+        <Form.Label>Todo App</Form.Label>
         <Form.Control
           type="text"
-          placeholder="Enter email"
+          placeholder="Enter Todo"
           value={item}
           onChange={(event) => {
             setInput(event.target.value);
